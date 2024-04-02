@@ -24,7 +24,7 @@ RSpec.describe Cat, type: :model do
       end
 
       it 'is invalid if enjoys is shorter than 10 characters' do
-        cat = Cat.create(name: 'mark', age: 4, enjoys:'Chasing mice', image: 'gibberish')
-        expect(cat).to be_valid
+        cat = Cat.create(name: 'mark', age: 4, enjoys:'mice', image: 'gibberish')
+        expect(cat).to be_invalid
       end
 end

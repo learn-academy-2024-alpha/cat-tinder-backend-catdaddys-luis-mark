@@ -70,4 +70,33 @@ RSpec.describe "Cats", type: :request do
       expect(response).to have_http_status(200)
     end
   end
+  it "doesn't create a cat without a name" do
+    cat_params = {
+      cat: {
+        age: 2,
+        enjoys: 'Walks in the park',
+        image: 'https://images.unsplash.com/photo-1529778873920-4da4926a72c2?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1036&q=80'
+      }
+    }
+    post '/cats', params: cat_params
+    expect(response.status).to eq 422
+    json = JSON.parse(response.body)
+    expect(json['name']).to include "can't be blank"
+  end
+  
+  describe "PATCH /cats/:id" do
+    let!(:cat) { Cat.create(name: "Mittens", age: 4, enjoys: "Sitting on laps", image: "http://example.com/mittens.jpg") }
+  
+    it "returns a 422 error if the enjoys field is less than 10 characters" do
+      update_params = {
+        cat: {
+          enjoys: "Too short" 
+        }
+      }
+      patch "/cats/#{cat.id}", params: update_params
+      expect(response.status).to eq 422
+      json = JSON.parse(response.body)
+      expect(json['errors']['enjoys']).to include "is too short (minimum is 10 characters)"
+    end
+  end
 end
